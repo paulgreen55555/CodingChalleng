@@ -10,6 +10,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddHttpClient<INewsService, NewsService>();
 builder.Services.AddTransient<PostService>();
 
@@ -25,6 +35,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+
+app.UseCors("AllowAngularClient");
 app.MapPostsEndpoints();
 
 app.Run();
