@@ -35,6 +35,7 @@ namespace Blog.Api.Controllers
                 if (!string.IsNullOrEmpty(search))
                 {
                     filteredPosts = posts.Where(p => p is not null && p.Title.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                    totalPages = 1;
                 }
                 else 
                 {
