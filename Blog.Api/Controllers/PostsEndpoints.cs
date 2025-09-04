@@ -8,7 +8,12 @@ namespace Blog.Api.Controllers
     {
         public static WebApplication MapPostsEndpoints(this WebApplication app)
         {
-            app.MapGet("api/posts", async (IMemoryCache cache, PostService postService, int page = 1, int pageSize = 20) =>
+            app.MapGet("api/posts", async (
+                IMemoryCache cache,
+                PostService postService,
+                int page = 1,
+                int pageSize = 20,
+                string search = "") =>
             {
                 string cacheKey = "posts_cache_key";
 
@@ -25,10 +30,20 @@ namespace Blog.Api.Controllers
                 var totalItems = posts.Count;
                 var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-                var pagedData = posts
+                List<NewsContent> filteredPosts = new List<NewsContent>();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    filteredPosts = posts.Where(p => p is not null && p.Title.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                else 
+                {
+                    filteredPosts = posts
+                    .Where(p => p is not null)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToList();
+                }
 
                 var result = new
                 {
@@ -36,7 +51,7 @@ namespace Blog.Api.Controllers
                     PageSize = pageSize,
                     TotalItems = totalItems,
                     TotalPages = totalPages,
-                    Data = pagedData
+                    Data = filteredPosts
                 };
 
                 return result is not null ? Results.Ok(result) : Results.NotFound();
