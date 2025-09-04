@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHttpClient<INewsService, NewsService>();
-builder.Services.AddTransient<PostService>();
+builder.Services.AddScoped<PostService>();
 
 var app = builder.Build();
 
